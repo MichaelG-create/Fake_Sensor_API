@@ -18,9 +18,33 @@ class Sensor(object):
     Methods:
         - simulate_visit_count(average_visit, std_visit_count) -> int
     """
-    def __init__(self, average_visit_count:int, standard_deviation_visit_count:int):
+    def __init__(self,
+                 average_visit_count:int, standard_deviation_visit_count:int,
+                 malfunction_rate: float, break_rate: float
+                 ):
         self.average_visit = average_visit_count
         self.std_visit = standard_deviation_visit_count
+
+        self.malfunction_rate = malfunction_rate
+        self.break_rate = break_rate
+
+    def malfunction_or_break(self, visit_count:int)-> (int, str):
+        """
+        if malfunction : diminish visit_count by 80% !
+        if break event : visit_count = 0
+        :param visit_count:
+        :return: modified visit_count, break_or_malfunction_flag string to log the event type
+        """
+        event = np.random.random()
+        if event <= self.break_rate:
+            break_or_malfunction_flag = "break"
+            return 0
+        elif event <= self.malfunction_rate:
+            break_or_malfunction_flag = "malfunction"
+            return int(visit_count * 0.2)
+        else:
+            break_or_malfunction_flag = ''
+            return visit_count, break_or_malfunction_flag
 
     @staticmethod
     def modulate_with_week_day(visit_count:int, visit_date:date)->int:
@@ -66,23 +90,30 @@ class Sensor(object):
             self.std_visit
         ))
 
+        # malfunction or break event
+        visit_count, flag = self.malfunction_or_break(visit_count)
+
         # add week_day impact on visit_count
         visit_count = self.modulate_with_week_day(visit_count, visit_date)
 
-        print(f"Visits count was :{visit_count} this day : {visit_date}")
+        print(f"Visits count was :{visit_count} this day : {visit_date} "+flag)
         return visit_count
 
 if __name__ == "__main__":
-    # means : do this only if the script is directly run (__name__ = __main__')
+    # meaning : do this only if the script is directly run (__name__ = __main__')
     # When it’s imported as a module in another file, __name__ is set to the name of the file/module
     # (without the .py extension).
     avg_visit_count = 2000
     std_visit_count = 100
+
+    malfunction_chance = 0.035
+    break_chance = 0.015
+
     if len(sys.argv) > 1:
         date_tok = sys.argv[1].split('-')
         date_of_visit = date(int(date_tok[0]), int(date_tok[1]), int(date_tok[2]))
     else :
         date_of_visit = date(2024,11,5)
-    sensor = Sensor(avg_visit_count, std_visit_count)
+    sensor = Sensor(avg_visit_count, std_visit_count, malfunction_chance, break_chance)
     result = sensor.simulate_visit_count(date_of_visit)
 
