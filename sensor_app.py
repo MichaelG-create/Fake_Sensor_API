@@ -5,8 +5,6 @@ import sys
 
 import numpy as np
 
-
-
 class Sensor(object):
     """
     Creates a sensor object which:
@@ -36,15 +34,17 @@ class Sensor(object):
         :return: modified visit_count, break_or_malfunction_flag string to log the event type
         """
         event = np.random.random()
+
         if event <= self.break_rate:
             break_or_malfunction_flag = "break"
-            return 0
+            visit_count =  0
         elif event <= self.malfunction_rate:
             break_or_malfunction_flag = "malfunction"
-            return int(visit_count * 0.2)
+            visit_count =  int(visit_count * 0.2)
         else:
             break_or_malfunction_flag = ''
-            return visit_count, break_or_malfunction_flag
+
+        return visit_count, break_or_malfunction_flag
 
     @staticmethod
     def modulate_with_week_day(visit_count:int, visit_date:date)->int:
