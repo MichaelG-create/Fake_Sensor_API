@@ -90,11 +90,12 @@ class Sensor(object):
             self.std_visit
         ))
 
+        # add week_day impact on visit_count
+        visit_count = self.modulate_with_week_day(visit_count, visit_date)
+
         # malfunction or break event
         visit_count, flag = self.malfunction_or_break(visit_count)
 
-        # add week_day impact on visit_count
-        visit_count = self.modulate_with_week_day(visit_count, visit_date)
 
         print(f"Visits count was :{visit_count} this day : {visit_date} "+flag)
         return visit_count
