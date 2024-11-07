@@ -13,6 +13,8 @@ class Sensor(object):
     Attributes:
         - average_visit
         - std_visit
+        - malfunction_rate : probability  of malfunction of a sensor
+        - break_rate  : probability  of breaking of a sensor
     Methods:
         - simulate_visit_count(average_visit, std_visit_count) -> int
     """
