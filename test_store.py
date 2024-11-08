@@ -10,7 +10,10 @@ from store_app import Store
 class TestStore(unittest.TestCase):
     """
     tests to do:
+    - tests on sensors in fact not directly store ?
+    - can test method
     """
+
     def setUp(self):
         # This method is run before each test
         avg_visit_count = 2000
@@ -48,7 +51,7 @@ class TestStore(unittest.TestCase):
         self.assertTrue(
             401 == self.sensor.simulate_visit_count(malfunction_date),
             (
-                f"error : should malfunction this days {malfunction_date} "
+                f"error : should malfunction_event this days {malfunction_date} "
                 f"but got {self.sensor.simulate_visit_count(malfunction_date)} visitors instead of 401"
             ),
         )

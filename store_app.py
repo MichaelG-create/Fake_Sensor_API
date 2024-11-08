@@ -71,7 +71,7 @@ class Store(object):
         :param visit_date:
         :return: sum of all sensor's traffic at date for the store (store_count
         """
-        # remark : when a sensor breaks or malfunction it variates the store_count
+        # remark : when a sensor breaks or malfunction_event it variates the store_count
         return int(
             sum(
                 [
