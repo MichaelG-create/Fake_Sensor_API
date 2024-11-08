@@ -109,7 +109,7 @@ class Sensor(object):
         # malfunction or break event
         visit_count, flag = self.malfunction_or_break(visit_count)
 
-        print(f"Visits count was :{visit_count} this day : {visit_date} " + flag)
+        # print(f"Visits count was :{visit_count} this day : {visit_date} " + flag)
         return visit_count
 
 

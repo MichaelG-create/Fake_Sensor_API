@@ -4,10 +4,13 @@ import pandas as pd
 import unittest
 
 from sensor_app import Sensor
+from store_app import Store
 
 
-class TestSensor(unittest.TestCase):
-
+class TestStore(unittest.TestCase):
+    """
+    tests to do:
+    """
     def setUp(self):
         # This method is run before each test
         avg_visit_count = 2000
@@ -35,12 +38,10 @@ class TestSensor(unittest.TestCase):
     def test_opened_on_worked_days(self):
         weekday_list = pd.date_range(date(2024, 11, 4), date(2024, 11, 9))
         for weekday_date in weekday_list:
-            # informs unittests that we are running subtests on the same kind of test (opened_days_count != 1)
-            with self.subTest(i=weekday_date):
-                self.assertTrue(
-                    -1 != self.sensor.simulate_visit_count(weekday_date),
-                    f"error : should be opened this weekday : {weekday_date} but got {self.sensor.simulate_visit_count(weekday_date)} visitors",
-                )
+            self.assertTrue(
+                -1 != self.sensor.simulate_visit_count(weekday_date),
+                f"error : should be opened this weekday : {weekday_date} but got {self.sensor.simulate_visit_count(weekday_date)} visitors",
+            )
 
     def test_malfunction_day(self) -> None:
         malfunction_date = date(2022, 2, 17)
