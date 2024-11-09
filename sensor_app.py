@@ -9,7 +9,7 @@ from datetime import date
 import sys
 
 import numpy as np
-
+import pandas as pd
 
 class Sensor(object):
     """
@@ -49,7 +49,7 @@ class Sensor(object):
         return visit_count
 
     @staticmethod
-    def modulate_with_week_day(
+    def modulate_visit_count_with_week_day(
         visit_count: int, visit_date=date(1, 1, 1), week_day=-1
     ) -> int:
         """
@@ -124,10 +124,10 @@ class Sensor(object):
         """
         visit_count = self.init_visit_count(visit_date)
 
-        visit_count = self.modulate_with_week_day(visit_count, visit_date)
+        visit_count = self.modulate_visit_count_with_week_day(visit_count, visit_date)
 
         if self.has_malfunction(visit_date):
-            visit_count *= int(visit_count * 0.2)
+            visit_count = int(visit_count * 0.2)
 
         if self.is_broken(visit_date):
             visit_count = 0
@@ -146,10 +146,19 @@ if __name__ == "__main__":
     MALFUNCTION_CHANCE: float = 0.035
     BREAK_CHANCE: float = 0.015
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) == 2:
         date_tok = sys.argv[1].split("-")
-        date_of_visit = date(int(date_tok[0]), int(date_tok[1]), int(date_tok[2]))
+        date_list = [date(int(date_tok[0]), int(date_tok[1]), int(date_tok[2]))]
+    elif len(sys.argv) == 3:
+        date_tok = sys.argv[1].split("-")
+        start_date = date(int(date_tok[0]), int(date_tok[1]), int(date_tok[2]))
+        date_tok = sys.argv[2].split("-")
+        end_date = date(int(date_tok[0]), int(date_tok[1]), int(date_tok[2]))
+        date_list = [dat.date() for dat in pd.date_range(start_date, end_date)]
     else:
-        date_of_visit = date(2024, 11, 5)
-    sensor = Sensor(AVG_VISIT_COUNT, STD_VISIT_COUNT, MALFUNCTION_CHANCE, BREAK_CHANCE)
-    result = sensor.simulate_visit_count(date_of_visit)
+        date_list = [date(2024, 11, 5)]
+
+    for date_of_visit in date_list:
+        sensor = Sensor(AVG_VISIT_COUNT, STD_VISIT_COUNT, MALFUNCTION_CHANCE, BREAK_CHANCE)
+        result = sensor.simulate_visit_count(date_of_visit)
+        print(f"On {date_of_visit} got : {result} visitors")
