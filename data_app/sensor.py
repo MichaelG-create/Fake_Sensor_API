@@ -23,7 +23,7 @@ class Sensor(object):
         - malfunction_rate : probability  of malfunction_event of a sensor
         - break_rate  : probability  of break_event of a sensor
     Methods:
-        - simulate_visit_count(average_visit, STD_VISIT_COUNT) -> int
+        - get_visit_count(average_visit, STD_VISIT_COUNT) -> int
     """
 
     def __init__(
@@ -84,7 +84,7 @@ class Sensor(object):
 
     def is_broken(self, visit_day: date) -> bool:
         self.init_date_seed(visit_day)
-        # run random like in simulate_visit_count (same random sequence)
+        # run random like in get_visit_count (same random sequence)
         np.random.normal()
 
         # malfunction_event or break_event
@@ -96,7 +96,7 @@ class Sensor(object):
 
     def has_malfunction(self, visit_day: date) -> bool:
         self.init_date_seed(visit_day)
-        # run random like in simulate_visit_count (same random sequence)
+        # run random like in get_visit_count (same random sequence)
         np.random.normal()
 
         # malfunction_event
@@ -108,7 +108,7 @@ class Sensor(object):
 
     # MAIN METHOD
     # -------------------------------------------------------------------------
-    def simulate_visit_count(self, visit_date: date) -> int:
+    def get_visit_count(self, visit_date: date) -> int:
         """
         Generate a number representing the visitor count at a particular visit_date
         Generation of the number :
@@ -163,5 +163,5 @@ if __name__ == "__main__":
         sensor = Sensor(
             AVG_VISIT_COUNT, STD_VISIT_COUNT, MALFUNCTION_CHANCE, BREAK_CHANCE
         )
-        result = sensor.simulate_visit_count(date_of_visit)
+        result = sensor.get_visit_count(date_of_visit)
         print(f"On {date_of_visit} got : {result} visitors")
