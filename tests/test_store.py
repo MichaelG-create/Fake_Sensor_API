@@ -1,10 +1,9 @@
+"""test class Store"""
+
 import unittest
 from datetime import date
 
-import pandas as pd
-
 from data_app import Store
-from data_app.sensor import Sensor
 
 
 class TestStore(unittest.TestCase):
@@ -14,24 +13,14 @@ class TestStore(unittest.TestCase):
     - can test methods (get_tot
     """
 
-    def setUp(self):
-        # This method is run before each test
-        avg_visit_count = 2000
-        std_visit_count = 100
-
-        malfunction_chance = 0.035
-        break_chance = 0.015
-
-        self.sensor = Sensor(
-            avg_visit_count, std_visit_count, malfunction_chance, break_chance
-        )
-
     def test_get_all_traffic(self):
+        """test all traffic should be 752 in this store this date"""
         lille_store = Store("Lille", 1200, 300)
         visits = lille_store.get_all_traffic(date(2023, 9, 13))
         self.assertEqual(visits, 752)
 
     def test_get_sensor_traffic(self):
+        """test traffic of sensor 2 should be 151 in this store this date"""
         lille_store = Store("Lille", 1200, 300)
         visits = lille_store.get_sensor_traffic(2, date(2023, 9, 13))
         self.assertEqual(
@@ -39,6 +28,7 @@ class TestStore(unittest.TestCase):
         )  # something around 20% of (average +10%) (wednesday)
 
     def test_sunday_closed(self):
+        """test traffic of sensor 2 should be -1 in this store this sunday"""
         lille_store = Store("Lille", 1200, 300)
         visits = lille_store.get_sensor_traffic(2, date(2023, 9, 17))
         self.assertEqual(visits, -1)

@@ -1,10 +1,12 @@
+"""Store object class"""
+
 import sys
 from datetime import date
 
 from data_app.sensor import Sensor
 
 
-class Store(object):
+class Store:
     """
     Store attributes:
     - sensors_number sensors (Sensor object) (2)
@@ -14,7 +16,7 @@ class Store(object):
     - get_all_traffic on a given date
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=R0913, R0917
         self,
         store_name: str,
         average_visits: int,
@@ -69,16 +71,10 @@ class Store(object):
 
     def get_all_traffic(self, visit_date: date) -> int:
         """Return the total traffic count at a date"""
-        return sum([sensor.get_visit_count(visit_date) for sensor in self.sensors])
+        return sum(sensor.get_visit_count(visit_date) for sensor in self.sensors)
 
 
 if __name__ == "__main__":
-    avg_visit_count = 2000
-    std_visit_count = 100
-
-    malfunction_chance = 0.035
-    break_chance = 0.015
-
     if len(sys.argv) > 1:
         date_tok = sys.argv[1].split("-")
         date_of_visit = date(int(date_tok[0]), int(date_tok[1]), int(date_tok[2]))
