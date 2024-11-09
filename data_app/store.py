@@ -39,12 +39,19 @@ class Store(object):
         :return: list_of_sensors created
         """
         list_of_sensors = []
-        average_visit_ratios = [0.2,0.2,0.2,0.2,0.05,0.05,0.05,0.05]  # 4-4 sensors get 80% and 20%
+        average_visit_ratios = [
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.05,
+            0.05,
+            0.05,
+            0.05,
+        ]  # 4-4 sensors get 80% and 20%
         # print(f"self.sensors_number : {self.sensors_number}")
         for i in range(self.sensors_number):
-            average_visit_sensor = int(
-                average_visit_ratios[i] * self.average_visits
-            )
+            average_visit_sensor = int(average_visit_ratios[i] * self.average_visits)
             std_visit_sensor = int(average_visit_ratios[i] * self.std_visit)
             list_of_sensors.append(
                 Sensor(
@@ -60,11 +67,9 @@ class Store(object):
         """Return the traffic for one sensor at a date"""
         return self.sensors[sensor_id].get_visit_count(business_date)
 
-
     def get_all_traffic(self, visit_date: date) -> int:
         """Return the total traffic count at a date"""
-        return sum([sensor.get_visit_count(visit_date)
-                    for sensor in self.sensors])
+        return sum([sensor.get_visit_count(visit_date) for sensor in self.sensors])
 
 
 if __name__ == "__main__":
@@ -113,8 +118,12 @@ if __name__ == "__main__":
     lille_store = Store("Lille", 1200, 300)
     visits = lille_store.get_sensor_traffic(2, date(2023, 9, 13))
 
-    print(f" for sensor 2, visits are {visits} on this peculiar day :{date(2023, 9, 13).weekday()}")
+    print(
+        f" for sensor 2, visits are {visits} on this peculiar day :{date(2023, 9, 13).weekday()}"
+    )
 
     lille_store = Store("Lille", 1200, 300)
     visits = lille_store.get_all_traffic(date(2023, 9, 13))
-    print(f"total visits are {visits} on this peculiar day :{date(2023, 9, 13).weekday()}")
+    print(
+        f"total visits are {visits} on this peculiar day :{date(2023, 9, 13).weekday()}"
+    )

@@ -13,6 +13,7 @@ class TestStore(unittest.TestCase):
     - tests on sensors in fact not directly store ?
     - can test methods (get_tot
     """
+
     def setUp(self):
         # This method is run before each test
         avg_visit_count = 2000
@@ -33,7 +34,9 @@ class TestStore(unittest.TestCase):
     def test_get_sensor_traffic(self):
         lille_store = Store("Lille", 1200, 300)
         visits = lille_store.get_sensor_traffic(2, date(2023, 9, 13))
-        self.assertEqual(visits, 151) #something around 20% of (average +10%) (wednesday)
+        self.assertEqual(
+            visits, 151
+        )  # something around 20% of (average +10%) (wednesday)
 
     def test_sunday_closed(self):
         lille_store = Store("Lille", 1200, 300)
