@@ -1,7 +1,7 @@
+import unittest
 from datetime import date
 
 import pandas as pd
-import unittest
 
 from data_app import Store
 from data_app.sensor import Sensor

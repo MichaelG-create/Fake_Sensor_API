@@ -2,11 +2,10 @@
 Module containing Sensor Class
 """
 
-from datetime import date
-
 # date : useful when full days are used
 # datetime : useful when moment of the day are needed
 import sys
+from datetime import date
 
 import numpy as np
 import pandas as pd
