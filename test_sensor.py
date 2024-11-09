@@ -121,11 +121,11 @@ class TestSensor(unittest.TestCase):
                       f"{probe.modulate_visit_count_with_week_day(probe.average_visit,week_day=week_day)}",)
 
                 # mean_count should be in range of [m - std, m + std] if enough weekdays generated (say 2 years)
-                av_val = probe.modulate_visit_count_with_week_day(probe.average_visit, week_day=week_day)
+                avg_val = probe.modulate_visit_count_with_week_day(probe.average_visit, week_day=week_day)
                 std_val = probe.modulate_visit_count_with_week_day(probe.std_visit, week_day=week_day)
                 
-                min_val = av_val - std_val 
-                max_val = av_val + std_val 
+                min_val = avg_val - std_val
+                max_val = avg_val + std_val
                 
                 self.assertTrue(
                     min_val <= mean_count <= max_val,
