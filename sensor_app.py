@@ -38,67 +38,15 @@ class Sensor(object):
         self.malfunction_rate = malfunction_rate
         self.break_rate = break_rate
 
-    def break_event(self, event: float, visit_count: int) -> int:
-        """
-        if break event : visit_count = 0
-        :param event: random number in [0,1] to check if sensor breaks
-        :param visit_count:
-        :return: modified visit_count, break_or_malfunction_flag string to log the event type
-        """
-        if event <= self.break_rate:
-            visit_count = 0
+    @staticmethod
+    def init_date_seed(visit_day: date):
+        # ensure reproducibility of rands for the same day
+        np.random.seed(visit_day.toordinal())
 
+    def init_visit_count(self, visit_date):
+        self.init_date_seed(visit_date)
+        visit_count = int(np.random.normal(self.average_visit, self.std_visit))
         return visit_count
-
-    def malfunction_event(self, event: float, visit_count: int) -> int:
-        """
-        if malfunction_event : diminish visit_count by 80% !
-        :param event: random number in [0,1] to check if sensor malfunction
-        :param visit_count:
-        :return: modified visit_count, break_or_malfunction_flag string to log the event type
-        """
-        if event <= self.malfunction_rate:
-            visit_count = int(visit_count * 0.2)
-
-        return visit_count
-
-    def is_broken(self, visit_day: date) -> bool:
-        """
-        test if this day, the sensor brakes
-        :param visit_day:
-        :return: broken or not
-        """
-        # ensure reproducibility for the same day
-        self.initiate_seed(visit_day)
-        # run random to progress along the random sequence initiated by the seed
-        # so that rand_event is the same as in simulate_visit_count
-        np.random.normal()
-
-        # malfunction_event or break_event
-        rand_event = np.random.random()
-        if rand_event <= self.break_rate:
-            return True
-        else:
-            return False
-
-    def has_malfunction(self, visit_day: date) -> bool:
-        """
-        test if this day, the sensor has malfunction
-        :param visit_day:
-        :return: malfunction or not
-        """
-        # ensure reproducibility for the same day
-        self.initiate_seed(visit_day)
-        # run random to progress along the random sequence initiated by the seed
-        # so that rand_event is the same as in simulate_visit_count
-        np.random.normal()
-
-        # malfunction_event
-        rand_event = np.random.random()
-        if rand_event <= self.malfunction_rate:
-            return True
-        else:
-            return False
 
     @staticmethod
     def modulate_with_week_day(
@@ -118,6 +66,7 @@ class Sensor(object):
         :param week_day: or day of the week (int in [0:7])
         :return:
         """
+        # user can input a date or a weekday
         if visit_date != date(1, 1, 1):
             week_day = visit_date.weekday()
         elif week_day == -1:
@@ -132,11 +81,32 @@ class Sensor(object):
 
         return int(visit_count)
 
-    @staticmethod
-    def initiate_seed(visit_day: date):
-        # ensure reproducibility of rands for the same day
-        np.random.seed(visit_day.toordinal())
+    def is_broken(self, visit_day: date) -> bool:
+        self.init_date_seed(visit_day)
+        # run random like in simulate_visit_count (same random sequence)
+        np.random.normal()
 
+        # malfunction_event or break_event
+        rand_event = np.random.random()
+        if rand_event <= self.break_rate:
+            return True
+        else:
+            return False
+
+    def has_malfunction(self, visit_day: date) -> bool:
+        self.init_date_seed(visit_day)
+        # run random like in simulate_visit_count (same random sequence)
+        np.random.normal()
+
+        # malfunction_event
+        rand_event = np.random.random()
+        if rand_event <= self.malfunction_rate:
+            return True
+        else:
+            return False
+
+    # MAIN METHOD
+    # -------------------------------------------------------------------------
     def simulate_visit_count(self, visit_date: date) -> int:
         """
         Generate a number representing the visitor count at a particular visit_date
@@ -152,19 +122,15 @@ class Sensor(object):
         :param visit_date:
         :return: visit_count
         """
-        # ensure reproducibility for the same day
-        self.initiate_seed(visit_date)
+        visit_count = self.init_visit_count(visit_date)
 
-        # generate random visit count with random.normalvariate
-        visit_count = int(np.random.normal(self.average_visit, self.std_visit))
-
-        # add week_day impact on visit_count
         visit_count = self.modulate_with_week_day(visit_count, visit_date)
 
-        # malfunction_event or break_event
-        rand_event = np.random.random()
-        visit_count = self.malfunction_event(rand_event, visit_count)
-        visit_count = self.break_event(rand_event, visit_count)
+        if self.has_malfunction(visit_date):
+            visit_count *= int(visit_count * 0.2)
+
+        if self.is_broken(visit_date):
+            visit_count = 0
 
         # print(f"Visits count was :{visit_count} this day : {visit_date} " + flag)
         return visit_count
