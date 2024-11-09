@@ -1,10 +1,11 @@
-name: CI : Tests unitaires et qualité du code
+name: CI Tests unitaires et qualité du code
 
 on:
   push:
     branches: [ "develop" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
+      [ "develop" ]
 
 permissions:
   contents: read
@@ -37,6 +38,8 @@ jobs:
       run: mypy .
 
     - name: Run unit tests
-      run: python -m unittest test_sensor.py
+      run: |
+        python -m unittest tests/test_sensor.py
+        python -m unittest tests/test_store.py
 
         
