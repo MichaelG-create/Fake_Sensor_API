@@ -42,3 +42,4 @@ jobs:
         python -m unittest tests/test_sensor.py
         python -m unittest tests/test_store.py
 
+        
