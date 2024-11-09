@@ -14,7 +14,7 @@ def create_app() -> dict:
     store_avg_visit = [3000, 8000, 6000, 2000, 1700]
     store_std_visit = [500, 800, 500, 400, 100]
     perc_malfunction = [0.05, 0.1, 0.08, 0.05, 0.05]
-    perc_break = [0.05, 0.08, 0.05, 0.02, 0]
+    perc_break = [0.05, 0.08, 0.05, 0.02, 0.01]
 
     store_dict = dict()
 
