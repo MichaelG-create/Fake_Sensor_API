@@ -11,6 +11,7 @@ import sys
 import numpy as np
 import pandas as pd
 
+
 class Sensor(object):
     """
     Creates a sensor object which:
@@ -159,6 +160,8 @@ if __name__ == "__main__":
         date_list = [date(2024, 11, 5)]
 
     for date_of_visit in date_list:
-        sensor = Sensor(AVG_VISIT_COUNT, STD_VISIT_COUNT, MALFUNCTION_CHANCE, BREAK_CHANCE)
+        sensor = Sensor(
+            AVG_VISIT_COUNT, STD_VISIT_COUNT, MALFUNCTION_CHANCE, BREAK_CHANCE
+        )
         result = sensor.simulate_visit_count(date_of_visit)
         print(f"On {date_of_visit} got : {result} visitors")

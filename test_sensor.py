@@ -45,7 +45,10 @@ class TestSensor(unittest.TestCase):
         sunday_date = date(2024, 11, 3)
         self.assertTrue(
             -1 == self.sensor.simulate_visit_count(sunday_date),
-            f"error : opened this sunday : {sunday_date} with {self.sensor.simulate_visit_count(sunday_date)} visitors",
+            (
+                f"error : opened this sunday : {sunday_date} "
+                f"with {self.sensor.simulate_visit_count(sunday_date)} visitors",
+            ),
         )
 
     # needs to be tested over a set of weekday date (monday, tuesday, wednesday, thursday, friday, saturday
@@ -56,7 +59,10 @@ class TestSensor(unittest.TestCase):
             with self.subTest(i=weekday_date):
                 self.assertTrue(
                     -1 != self.sensor.simulate_visit_count(weekday_date),
-                    f"error : should be opened this weekday : {weekday_date} but got {self.sensor.simulate_visit_count(weekday_date)} visitors",
+                    (
+                        f"error : should be opened this weekday : {weekday_date} "
+                        f"but got {self.sensor.simulate_visit_count(weekday_date)} visitors",
+                    ),
                 )
 
     def test_malfunction_day(self) -> None:
@@ -73,67 +79,81 @@ class TestSensor(unittest.TestCase):
         break_date = date(2022, 2, 4)
         self.assertTrue(
             0 == self.sensor.simulate_visit_count(break_date),
-            f"error : should be broken this day : {break_date}, got {self.sensor.simulate_visit_count(break_date)} visitors instead of 0",
+            (
+                f"error : should be broken this day : {break_date}, "
+                f"got {self.sensor.simulate_visit_count(break_date)} visitors instead of 0",
+            ),
         )
 
-    def test_mean_count_on_weekdays(self) -> None:
+    def test_mean_count_when_sensor_ok(self) -> None:
         """
-        test if average count on week_day specified is correct
+        for days without sensor break or malfunction,
+        test if mean count is in range:
+            [sensor.average_visit - sensor.std_visit,
+            sensor.average_visit + sensor.std_visit]
         :return:
         """
-        def get_weekday_dates(list_date: list[date], day_of_the_week: int) -> list[date]:
-            return [vis_date
-                    for vis_date in list_date
-                    if vis_date.weekday() == day_of_the_week
-                    ]
 
-        def get_working_sensor_dates(detector:Sensor, list_date: list[date]):
-            return [vis_date
-                    for vis_date in list_date
-                    if not (detector.is_broken(vis_date)
-                            or detector.has_malfunction(vis_date)
-                            )
-                    ]
+        def get_weekday_dates(
+            list_date: list[date], day_of_the_week: int
+        ) -> list[date]:
+            return [
+                visit_date
+                for visit_date in list_date
+                if visit_date.weekday() == day_of_the_week
+            ]
 
-        def calculate_mean_count(detector:Sensor, list_date: list[date]):
-            return (sum([detector.simulate_visit_count(date_f)
-                        for date_f in list_date
-                        ])
-                    )/ len(list_date)
+        def get_working_sensor_dates(
+            detector: Sensor, list_date: list[date]
+        ) -> list[date]:
+            return [
+                visit_date
+                for visit_date in list_date
+                if not (
+                    detector.is_broken(visit_date)
+                    or detector.has_malfunction(visit_date)
+                )
+            ]
+
+        def calculate_mean_count(detector: Sensor, list_date: list[date]) -> float:
+            return (
+                sum([detector.simulate_visit_count(date_f) for date_f in list_date])
+            ) / len(list_date)
 
         # start of test_mean_count_on_week_days
+        probe = self.sensor
+
+        start_date = date(2022, 1, 1)
+        end_date = date(2024, 1, 1)
+
+        date_list = [
+            date_visit.date() for date_visit in pd.date_range(start_date, end_date)
+        ]
+        date_list = get_working_sensor_dates(probe, date_list)
+
         for week_day in range(6):  # don't test sundays : they're tested already
-            with (self.subTest(i=week_day)):
-                probe = self.sensor
+            with self.subTest(i=week_day):
+                dates_weekday = get_weekday_dates(date_list, week_day)
 
-                start_date = date(2022, 1, 1)
-                end_date = date(2024, 1, 1)
+                mean_count = calculate_mean_count(probe, dates_weekday)
 
-                date_list = [dat.date() for dat in pd.date_range(start_date, end_date)]
+                # mean_count should be in [m - std, m + std] if enough weekdays (~ 2 years)
+                avg_val = probe.modulate_visit_count_with_week_day(
+                    probe.average_visit, week_day=week_day
+                )
+                std_val = probe.modulate_visit_count_with_week_day(
+                    probe.std_visit, week_day=week_day
+                )
 
-                date_filtered = get_working_sensor_dates(probe, date_list)
-                date_filtered = get_weekday_dates(date_filtered, week_day)
-
-                mean_count = calculate_mean_count(probe,date_filtered)
-
-                print(f"on day {week_day} average_count is: {mean_count}"
-                      f" but average should be of "
-                      f"{probe.modulate_visit_count_with_week_day(probe.average_visit,week_day=week_day)}",)
-
-                # mean_count should be in range of [m - std, m + std] if enough weekdays generated (say 2 years)
-                avg_val = probe.modulate_visit_count_with_week_day(probe.average_visit, week_day=week_day)
-                std_val = probe.modulate_visit_count_with_week_day(probe.std_visit, week_day=week_day)
-                
                 min_val = avg_val - std_val
                 max_val = avg_val + std_val
-                
+
                 self.assertTrue(
                     min_val <= mean_count <= max_val,
                     f"error : on day {week_day} average_count should be between :"
                     f" {min_val} and {max_val}"
                     f" but got an average of {mean_count}",
                 )
-
 
 
 if __name__ == "__main__":
