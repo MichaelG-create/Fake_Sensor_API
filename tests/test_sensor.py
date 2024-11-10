@@ -1,7 +1,9 @@
+"""test Sensor class"""
+
+import unittest
 from datetime import date
 
 import pandas as pd
-import unittest
 
 from data_app.sensor import Sensor
 
@@ -12,7 +14,8 @@ class TestSensor(unittest.TestCase):
     - method get_visit_count:
         - -1 on sundays (test one known sunday)
         - not -1 on opened_days (test 6 consecutive known opened_days)
-        - small values on malfunction_event days (test one known malfunction_event day with its strange value)
+        - small values on malfunction_event days
+        (test one known malfunction_event day with its strange value)
         - 0 on break days (test one known break day with the 0 count)
     - remarks
         - does not test ALL sundays
@@ -42,6 +45,7 @@ class TestSensor(unittest.TestCase):
     #     print("Cleaning up after test")
 
     def test_closed_on_sunday(self) -> None:
+        """sunday is -1"""
         sunday_date = date(2024, 11, 3)
         self.assertTrue(
             -1 == self.sensor.get_visit_count(sunday_date),
@@ -51,11 +55,13 @@ class TestSensor(unittest.TestCase):
             ),
         )
 
-    # needs to be tested over a set of weekday date (monday, tuesday, wednesday, thursday, friday, saturday
+    # needs to be tested over a set of weekday date (monday to saturday)
     def test_opened_on_worked_days(self):
+        """not -1 if not sunday"""
         weekday_list = pd.date_range(date(2024, 11, 4), date(2024, 11, 9))
         for weekday_date in weekday_list:
-            # informs unittests that we are running subtests on the same kind of test (opened_days_count != 1)
+            # informs unittests that we are running subtests
+            # on the same kind of test (opened_days_count != 1)
             with self.subTest(i=weekday_date):
                 self.assertTrue(
                     -1 != self.sensor.get_visit_count(weekday_date),
@@ -66,6 +72,7 @@ class TestSensor(unittest.TestCase):
                 )
 
     def test_malfunction_day(self) -> None:
+        """sensor feeling really bad this day"""
         malfunction_date = date(2022, 2, 17)
         self.assertTrue(
             401 == self.sensor.get_visit_count(malfunction_date),
@@ -76,6 +83,7 @@ class TestSensor(unittest.TestCase):
         )
 
     def test_break_day(self) -> None:
+        """sensor died this day : 0"""
         break_date = date(2022, 2, 4)
         self.assertTrue(
             0 == self.sensor.get_visit_count(break_date),
@@ -97,6 +105,7 @@ class TestSensor(unittest.TestCase):
         def get_weekday_dates(
             list_date: list[date], day_of_the_week: int
         ) -> list[date]:
+            """friday's dates (or other day but not sunday)"""
             return [
                 visit_date
                 for visit_date in list_date
@@ -106,6 +115,7 @@ class TestSensor(unittest.TestCase):
         def get_working_sensor_dates(
             detector: Sensor, list_date: list[date]
         ) -> list[date]:
+            """dates with sensor in good shape"""
             return [
                 visit_date
                 for visit_date in list_date
@@ -116,8 +126,9 @@ class TestSensor(unittest.TestCase):
             ]
 
         def calculate_mean_count(detector: Sensor, list_date: list[date]) -> float:
+            """mean count for a peculiar sensor on all dates in the list"""
             return (
-                sum([detector.get_visit_count(date_f) for date_f in list_date])
+                sum(detector.get_visit_count(date_f) for date_f in list_date)
             ) / len(list_date)
 
         # start of test_mean_count_on_week_days

@@ -2,17 +2,16 @@
 Module containing Sensor Class
 """
 
-from datetime import date
-
 # date : useful when full days are used
 # datetime : useful when moment of the day are needed
 import sys
+from datetime import date
 
 import numpy as np
 import pandas as pd
 
 
-class Sensor(object):
+class Sensor:
     """
     Creates a sensor object which:
         simulates a real visitor counter v in a mall
@@ -41,10 +40,11 @@ class Sensor(object):
 
     @staticmethod
     def init_date_seed(visit_day: date):
-        # ensure reproducibility of rands for the same day
+        """Ensure reproducibility of rands for the same day"""
         np.random.seed(visit_day.toordinal())
 
     def init_visit_count(self, visit_date):
+        """Initiate visit_count with random normal law"""
         self.init_date_seed(visit_date)
         visit_count = int(np.random.normal(self.average_visit, self.std_visit))
         return visit_count
@@ -83,28 +83,24 @@ class Sensor(object):
         return int(visit_count)
 
     def is_broken(self, visit_day: date) -> bool:
+        """too bad, the sensor is broken"""
         self.init_date_seed(visit_day)
         # run random like in get_visit_count (same random sequence)
         np.random.normal()
 
         # malfunction_event or break_event
         rand_event = np.random.random()
-        if rand_event <= self.break_rate:
-            return True
-        else:
-            return False
+        return rand_event <= self.break_rate
 
     def has_malfunction(self, visit_day: date) -> bool:
+        """gosh this sensor does not work well"""
         self.init_date_seed(visit_day)
         # run random like in get_visit_count (same random sequence)
         np.random.normal()
 
         # malfunction_event
         rand_event = np.random.random()
-        if rand_event <= self.malfunction_rate:
-            return True
-        else:
-            return False
+        return rand_event <= self.malfunction_rate
 
     # MAIN METHOD
     # -------------------------------------------------------------------------
@@ -163,5 +159,6 @@ if __name__ == "__main__":
         sensor = Sensor(
             AVG_VISIT_COUNT, STD_VISIT_COUNT, MALFUNCTION_CHANCE, BREAK_CHANCE
         )
-        result = sensor.get_visit_count(date_of_visit)
-        print(f"On {date_of_visit} got : {result} visitors")
+        print(
+            f"On {date_of_visit} got : {sensor.get_visit_count(date_of_visit)} visitors"
+        )
