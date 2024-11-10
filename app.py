@@ -1,4 +1,5 @@
 """Store app using FASTApi"""
+
 from datetime import date
 
 from fastapi import FastAPI
